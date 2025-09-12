@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"log"
-	"path/filepath"
 
 	"github.com/phihc116/sync-ttl/internals/infrastructure"
 	"github.com/phihc116/sync-ttl/internals/migrations"
@@ -37,8 +36,8 @@ func main() {
 	log.Println("SQL ready:", sqlDb != nil)
 	log.Println("Dynamo ready:", dynamo != nil)
 
-	filePath := filepath.Join("user_data.txt")
-	server.LoadUserFromFile(filePath)
+	// filePath := filepath.Join("user_data.txt")
+	// server.LoadUserFromFile(filePath)
 
-	//server.UpdateAllUsers(ctx, 200)
+	server.UpdateAllUsers(ctx, 200)
 }
