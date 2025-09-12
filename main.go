@@ -13,14 +13,24 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 	"github.com/phihc116/sync-ttl/server"
+	"gopkg.in/natefinch/lumberjack.v2"
 )
 
-// 1000
-const scanLimit = 3
+// 100
+const scanLimit = 100
 
 func main() {
+	log.SetOutput(&lumberjack.Logger{
+		Filename:   "update.log",
+		MaxSize:    100,
+		MaxBackups: 5,
+		MaxAge:     30,
+		Compress:   true,
+	})
+	log.SetFlags(log.Ldate | log.Ltime | log.Lmicroseconds | log.Lshortfile)
+
 	totalSegments := int32(runtime.GOMAXPROCS(0))
-	fmt.Printf("Using TotalSegments = %d\n", totalSegments)
+	log.Printf("Using TotalSegments = %d\n", totalSegments)
 
 	ctx := context.TODO()
 	db, err := server.NewDynamoDb(ctx)
@@ -36,7 +46,7 @@ func main() {
 	var total int64
 	mu := sync.Mutex{}
 
-	for seg := range totalSegments {
+	for seg := int32(0); seg < totalSegments; seg++ {
 		wg.Add(1)
 		go func(segment int32) {
 			defer wg.Done()
@@ -101,9 +111,9 @@ func main() {
 				}
 				lastKey = out.LastEvaluatedKey
 			}
-		}(int32(seg))
+		}(seg)
 	}
 
 	wg.Wait()
-	fmt.Println("Total items updated:", total)
+	log.Printf("Total items updated: %d", total)
 }
