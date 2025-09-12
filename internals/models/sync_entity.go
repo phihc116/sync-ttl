@@ -1,4 +1,4 @@
-package server
+package models
 
 const (
 	HistoryTypeID                int = 963985

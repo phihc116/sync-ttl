@@ -1,6 +1,6 @@
 module github.com/phihc116/sync-ttl
 
-go 1.23.4
+go 1.24.0
 
 require github.com/aws/aws-sdk-go-v2 v1.39.0
 
@@ -17,7 +17,17 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/sso v1.29.3 // indirect
 	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.34.4 // indirect
 	github.com/aws/aws-sdk-go-v2/service/sts v1.38.4 // indirect
+	github.com/golang-sql/civil v0.0.0-20220223132316-b832511892a9 // indirect
+	github.com/golang-sql/sqlexp v0.1.0 // indirect
+	github.com/google/uuid v1.6.0 // indirect
+	github.com/jinzhu/inflection v1.0.0 // indirect
+	github.com/jinzhu/now v1.1.5 // indirect
+	github.com/microsoft/go-mssqldb v1.8.2 // indirect
+	golang.org/x/crypto v0.24.0 // indirect
+	golang.org/x/text v0.29.0 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1 // indirect
+	gorm.io/driver/sqlserver v1.6.1 // indirect
+	gorm.io/gorm v1.31.0 // indirect
 )
 
 require (
