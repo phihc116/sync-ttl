@@ -68,17 +68,21 @@ func main() {
 				}
 
 				for _, it := range items {
+					ctimeSec := *it.Ctime / 1000
+					expiration := ctimeSec + ninetyDays
+
 					_, err := db.UpdateItem(ctx, &dynamodb.UpdateItemInput{
 						TableName: aws.String(server.Table),
 						Key: map[string]types.AttributeValue{
 							"ClientID": &types.AttributeValueMemberS{Value: it.ClientID},
 							"ID":       &types.AttributeValueMemberS{Value: it.ID},
 						},
-						UpdateExpression: aws.String("SET ExpirationTime = ExpirationTime + :extra"),
+						UpdateExpression: aws.String("SET ExpirationTime = :exp"),
 						ExpressionAttributeValues: map[string]types.AttributeValue{
-							":extra": &types.AttributeValueMemberN{Value: fmt.Sprintf("%d", ninetyDays)},
+							":exp": &types.AttributeValueMemberN{Value: fmt.Sprintf("%d", expiration)},
 						},
 					})
+
 					if err != nil {
 						log.Printf("[seg %d] update failed for %s/%s (DataType=%v, Ctime=%v): %v",
 							segment, it.ClientID, it.ID, *it.DataType, *it.Ctime, err)
