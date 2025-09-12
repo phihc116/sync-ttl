@@ -21,8 +21,15 @@ func LoadUserFromFile(filePath string) error {
 	}
 	defer file.Close()
 
-	var users []models.User
 	scanner := bufio.NewScanner(file)
+	const maxCapacity = 1024 * 1024
+	buf := make([]byte, 0, 64*1024)
+	scanner.Buffer(buf, maxCapacity)
+
+	var users []models.User
+	const batchSize = 100
+	totalInserted := 0
+
 	for scanner.Scan() {
 		parts := strings.Split(scanner.Text(), "\t")
 		if len(parts) < 3 {
@@ -30,6 +37,7 @@ func LoadUserFromFile(filePath string) error {
 		}
 
 		clientID, _ := strconv.ParseInt(parts[1], 10, 64)
+
 		s := strings.TrimSpace(parts[0])
 		s = strings.TrimPrefix(s, "\ufeff")
 		externalID, _ := strconv.ParseInt(s, 10, 64)
@@ -43,18 +51,32 @@ func LoadUserFromFile(filePath string) error {
 			UpdatedCount: 0,
 		}
 		users = append(users, user)
+
+		if len(users) >= batchSize {
+			if err := db.CreateInBatches(users, batchSize).Error; err != nil {
+				return err
+			}
+			totalInserted += len(users)
+			log.Printf("Inserted %d users (total %d)", len(users), totalInserted)
+			users = users[:0]
+		}
 	}
 	if err := scanner.Err(); err != nil {
 		return err
 	}
 
 	if len(users) > 0 {
-		if err := db.Create(&users).Error; err != nil {
+		if err := db.CreateInBatches(users, batchSize).Error; err != nil {
 			return err
 		}
-		log.Printf("Inserted %d users into SQL Server\n", len(users))
-	} else {
+		totalInserted += len(users)
+		log.Printf("Inserted %d users (total %d)", len(users), totalInserted)
+	}
+
+	if totalInserted == 0 {
 		log.Println("No users found in file")
+	} else {
+		log.Printf("Finished inserting %d users into SQL Server", totalInserted)
 	}
 
 	return nil

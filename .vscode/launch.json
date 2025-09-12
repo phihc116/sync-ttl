@@ -16,7 +16,7 @@
         "AWS_REGION":"us-west-1",
         "AWS_ENDPOINT":"http://localhost:8000",
         "TABLE_NAME": "client-entity-dev",
-        "SQL_DSN": "sqlserver://sa:Herond101@localhost:1433?database=sync-dev&encrypt=disable&trustservercertificate=true&connection+timeout=30"
+        "SQL_DSN": "sqlserver://sa:Herond101@localhost:1433?database=sync-prod&encrypt=disable&trustservercertificate=true&connection+timeout=30"
       }
     }
   ]
