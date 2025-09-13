@@ -1,0 +1,100 @@
+services: 
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      SA_PASSWORD: "Herond101"
+      ACCEPT_EULA: "Y"
+    ports:
+      - "1433:1433"   
+    healthcheck:
+      test: ["CMD", "bash", "-c", "exec 3<>/dev/tcp/localhost/1433"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s       
+    volumes:
+      - ./mssql-data:/var/opt/mssql/data       
+  updater0:
+    build: .
+    depends_on:
+      sqlserver:
+        condition: service_healthy    
+    environment:
+      - SHARD_ID=0
+      - SHARD_COUNT=5 
+      - AWS_ACCESS_KEY_ID=GOSYNC
+      - AWS_SECRET_ACCESS_KEY=GOSYNC
+      - AWS_REGION=us-west-1
+      - AWS_ENDPOINT="http://localhost:8000"
+      - TABLE_NAME= "client-entity-dev"
+      - SQL_DSN=sqlserver://sa:Herond101@localhost:1433?database=sync-prod&encrypt=disable&trustservercertificate=true&connection+timeout=30
+    volumes:
+      - ./logs:/app/logs  
+
+  updater1:
+    build: .
+    depends_on:
+      sqlserver:
+        condition: service_healthy    
+    environment:
+      - SHARD_ID=1
+      - SHARD_COUNT=5 
+      - AWS_ACCESS_KEY_ID=GOSYNC
+      - AWS_SECRET_ACCESS_KEY=GOSYNC
+      - AWS_REGION=us-west-1
+      - AWS_ENDPOINT="http://localhost:8000"
+      - TABLE_NAME= "client-entity-dev"
+      - SQL_DSN=sqlserver://sa:Herond101@localhost:1433?database=sync-prod&encrypt=disable&trustservercertificate=true&connection+timeout=30  
+    volumes:
+      - ./logs:/app/logs
+
+  updater2:
+    build: .
+    depends_on:
+      sqlserver:
+        condition: service_healthy    
+    environment:
+      - SHARD_ID=2
+      - SHARD_COUNT=5 
+      - AWS_ACCESS_KEY_ID=GOSYNC
+      - AWS_SECRET_ACCESS_KEY=GOSYNC
+      - AWS_REGION=us-west-1
+      - AWS_ENDPOINT="http://localhost:8000"
+      - TABLE_NAME= "client-entity-dev"
+      - SQL_DSN=sqlserver://sa:Herond101@localhost:1433?database=sync-prod&encrypt=disable&trustservercertificate=true&connection+timeout=30
+    volumes:
+      - ./logs:/app/logs
+
+  updater3:
+    build: .
+    depends_on:
+      sqlserver:
+        condition: service_healthy    
+    environment:
+      - SHARD_ID=3
+      - SHARD_COUNT=5 
+      - AWS_ACCESS_KEY_ID=GOSYNC
+      - AWS_SECRET_ACCESS_KEY=GOSYNC
+      - AWS_REGION=us-west-1
+      - AWS_ENDPOINT="http://localhost:8000"
+      - TABLE_NAME= "client-entity-dev"
+      - SQL_DSN=sqlserver://sa:Herond101@localhost:1433?database=sync-prod&encrypt=disable&trustservercertificate=true&connection+timeout=30  
+    volumes:
+      - ./logs:/app/logs
+
+  updater4:
+    build: .
+    depends_on:
+      sqlserver:
+        condition: service_healthy    
+    environment:
+      - SHARD_ID=4
+      - SHARD_COUNT=5 
+      - AWS_ACCESS_KEY_ID=GOSYNC
+      - AWS_SECRET_ACCESS_KEY=GOSYNC
+      - AWS_REGION=us-west-1
+      - AWS_ENDPOINT="http://localhost:8000"
+      - TABLE_NAME= "client-entity-dev"
+      - SQL_DSN=sqlserver://sa:Herond101@localhost:1433?database=sync-prod&encrypt=disable&trustservercertificate=true&connection+timeout=30    
+    volumes:
+      - ./logs:/app/logs
