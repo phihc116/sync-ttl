@@ -107,16 +107,14 @@ func UpdateAllUsers(ctx context.Context, batchSize int, shardID, shardCount int)
 						lastKey = out.LastEvaluatedKey
 					}
 
-					if total > 0 {
-						if err := sqlDB.Model(&u).
-							Updates(map[string]any{
-								"is_updated":    true,
-								"updated_count": total,
-							}).Error; err != nil {
-							log.Printf("failed to mark updated for ClientID %d: %v", u.ClientID, err)
-						} else {
-							log.Printf("ClientID %d updated (%d items)", u.ClientID, total)
-						}
+					if err := sqlDB.Model(&u).
+						Updates(map[string]any{
+							"is_updated":    true,
+							"updated_count": total,
+						}).Error; err != nil {
+						log.Printf("failed to mark updated for ClientID %d: %v", u.ClientID, err)
+					} else {
+						log.Printf("ClientID %d updated (%d items)", u.ClientID, total)
 					}
 				}(u)
 			}
